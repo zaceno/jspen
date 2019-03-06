@@ -7,55 +7,42 @@ import * as store from './store'
 import html from './html.js'
 const { div, select, option, input, span } = html
 
-const changeName = (state, event) => [
-    { ...state, current: event.target.value },
-    store.Save({ code: state.code, name: event.target.value }),
+const onInit = action => (state, data) => {
+    const news = action(state, data)
+    return [
+        news,
+        !state.code &&
+            news.editor &&
+            news.code &&
+            editor.Load({ instance: news.editor, code: news.code }),
+        !state.editor &&
+            news.editor &&
+            news.code &&
+            editor.Load({ instance: news.editor, code: news.code }),
+        !state.output &&
+            news.output &&
+            news.code &&
+            output.Run({ instance: news.output, code: news.code }),
+        !state.code &&
+            news.output &&
+            news.code &&
+            output.Run({ instance: news.output, code: news.code }),
+        !state.list.length &&
+            news.list.length &&
+            store.Load({ name: '', action: onInitCode }),
+    ].filter(x => x)
+}
+const onInitOutput = onInit((state, output) => ({ ...state, output }))
+const onInitEditor = onInit((state, editor) => ({ ...state, editor }))
+const onInitStore = onInit((state, list) => ({ ...state, list }))
+const onInitCode = onInit((state, code) => ({ ...state, code }))
+
+const onCodeChanged = (state, code) => ({ ...state, code, dirty: true })
+const save = (state, code) => [
+    { ...state, code },
+    store.Save({ name: state.name, code, action: onSave }),
 ]
-
-const editorStarted = (state, instance) =>
-    [
-        { ...state, editor: instance },
-        state.code && editor.Set({ code: state.code, instance }),
-    ].filter(x => x)
-
-const outputStarted = (state, instance) =>
-    [
-        { ...state, output: instance },
-        state.code && output.Run({ code: state.code, instance }),
-    ].filter(x => x)
-
-const codeChanged = (state, code) => ({ ...state, code, dirty: true })
-
-const saveCode = (state, code) => [
-    state,
-    store.Save({
-        code,
-        onsaved: codeSaved,
-        name: state.current,
-    }),
-]
-
-const codeSaved = state =>
-    [
-        { ...state, dirty: false },
-        state.output &&
-            output.Run({ instance: state.output, code: state.code }),
-    ].filter(x => x)
-
-const codeLoaded = (state, code) =>
-    [
-        { ...state, code, dirty: false },
-        state.editor && editor.Set({ code, instance: state.editor }),
-    ].filter(x => x)
-
-const listLoaded = (state, list) => ({ ...state, list })
-const listSelectionChanged = (state, event) => [
-    { ...state, current: event.target.value },
-    store.Load({
-        name: event.target.value,
-        onload: codeLoaded,
-    }),
-]
+const onSave = state => ({ ...state, dirty: false })
 
 document.body.innerHTML = ''
 app({
@@ -64,39 +51,34 @@ app({
             editor: null,
             output: null,
             code: null,
-            modules: [],
-            current: '',
-            list: [''],
+            name: '',
+            list: [],
+            dirty: false,
         },
 
         editor.Init({
             container: css.editor,
-            onstart: editorStarted,
+            action: onInitEditor,
         }),
 
         output.Init({
             container: css.output,
-            onstart: outputStarted,
+            action: onInitOutput,
         }),
 
-        store.Load({
-            name: '',
-            onload: codeLoaded,
-        }),
-
-        store.List({
-            onupdate: listLoaded,
+        store.Init({
+            action: onInitStore,
         }),
     ],
     subscriptions: state => [
         state.editor && [
             editor.Change({
                 instance: state.editor,
-                onchange: codeChanged,
+                action: onCodeChanged,
             }),
             editor.Save({
                 instance: state.editor,
-                onsave: saveCode,
+                action: save,
             }),
         ],
     ],
@@ -105,15 +87,15 @@ app({
             div({ id: css.toolbar }, [
                 select(
                     {
-                        onchange: listSelectionChanged,
+                        //                      onchange: listSelectionChanged,
                     },
                     state.list.map(name =>
-                        option({ selected: state.current === name }, name)
+                        option({ selected: state.name === name }, name)
                     )
                 ),
                 input({
-                    onchange: changeName,
-                    value: state.current,
+                    //                    onchange: changeName,
+                    value: state.name,
                 }),
                 span(state.dirty ? '\u270D' : '\u2713'),
             ]),

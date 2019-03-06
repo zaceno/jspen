@@ -7,11 +7,11 @@ export const Init = Effect((props, dispatch) => {
         const containerElem = document.getElementById(props.container)
         const instance = CodeMirror(containerElem, EDITOR_OPTIONS)
         containerElem.querySelector('.CodeMirror').style.height = 'auto'
-        dispatch(props.onstart, instance)
-    }, 0)
+        dispatch(props.action, instance)
+    }, 1000)
 })
 
-export const Set = Effect(props =>
+export const Load = Effect(props =>
     setTimeout(_ => {
         props.instance.silentChange = true
         props.instance.setValue(props.code)
@@ -20,7 +20,7 @@ export const Set = Effect(props =>
 
 export const Save = Effect((props, dispatch) => {
     CodeMirror.commands.save = _ => {
-        dispatch(props.onsave, props.instance.getValue())
+        dispatch(props.action, props.instance.getValue())
     }
     return _ => (CodeMirror.commands.save = () => {})
 })
@@ -30,7 +30,7 @@ export const Change = Effect((props, dispatch) => {
         const sc = props.instance.silentChange
         props.instance.silentChange = false
         if (sc) return
-        setTimeout(() => dispatch(props.onchange, props.instance.getValue()), 0)
+        setTimeout(() => dispatch(props.action, props.instance.getValue()), 0)
     }
     props.instance.on('changes', handler)
     return () => props.instance.off('changes', handler)

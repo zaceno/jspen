@@ -6,7 +6,7 @@ import { style, reset as resetStyles } from './styling'
 export const Init = Effect((props, dispatch) => {
     setTimeout(() => {
         const element = document.getElementById(props.container)
-        dispatch(props.onstart, element)
+        dispatch(props.action, element)
     }, 0)
 })
 
