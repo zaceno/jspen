@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
     margin: 0;
     padding: 0;
     position: relative;
@@ -16,14 +17,12 @@ html, body {
     bottom: 0;
 }
 
-
 #output {
     position: absolute;
     top: 0;
     left: 0;
     bottom: 0;
-    right: 600px;
-
+    right: 720px;
 }
 
 #editor {
@@ -31,15 +30,32 @@ html, body {
     top: 32px;
     right: 0;
     bottom: 0;
-    width: 600px;
+    width: 720px;
 }
 
 #toolbar {
+    display: flex;
     position: absolute;
     top: 0;
     right: 0;
     height: 26px;
-    width: 592px;
+    width: 712px;
     padding: 4px;
     background: #ddd;
+}
+
+#toolbar select {
+    flex: 1 1 auto;
+    margin-top: 4px;
+}
+
+#toolbar input {
+    flex: 1 1 auto;
+}
+
+#toolbar span {
+    display: block;
+    flex: 1 1 auto;
+    text-align: right;
+    padding: 4px;
 }
