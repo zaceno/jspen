@@ -5,7 +5,7 @@ const list = JSON.parse(localStorage.getItem(LIST) || '{"": true}')
 const saveList = _ => localStorage.setItem(LIST, JSON.stringify(list))
 const listArr = _ => Object.keys(list).sort()
 const listHas = name => !!list[name]
-const getCode = name => localStorage.getItem(PREFIX + name) || ''
+export const getCode = name => localStorage.getItem(PREFIX + name) || ''
 const saveCode = (name, code) => {
     localStorage.setItem(PREFIX + name, code)
     list[name] = true

@@ -27,35 +27,50 @@ body {
 
 #editor {
     position: absolute;
-    top: 32px;
+    top: 30px;
     right: 0;
     bottom: 0;
     width: 720px;
 }
 
 #toolbar {
-    display: flex;
     position: absolute;
+    box-sizing: border-box;
     top: 0;
     right: 0;
-    height: 26px;
-    width: 712px;
-    padding: 4px;
+    height: 30px;
+    width: 720px;
+    padding: 0;
+    margin: 0;
     background: #ddd;
 }
 
 #toolbar select {
-    flex: 1 1 auto;
-    margin-top: 4px;
+    display: block;
+    position: absolute;
+    width: 400px;
+    left: 4px;
+    top: 6px;
+    margin: 0;
 }
 
 #toolbar input {
-    flex: 1 1 auto;
+    display: block;
+    position: absolute;
+    width: 385px;
+    left: 4px;
+    top: 6px;
+    margin: 0;
+    height: 19px;
 }
 
 #toolbar span {
     display: block;
-    flex: 1 1 auto;
+    position: absolute;
     text-align: right;
-    padding: 4px;
+    line-height: 18px;
+    padding: 0;
+    margin: 0;
+    top: 6px;
+    right: 5px;
 }

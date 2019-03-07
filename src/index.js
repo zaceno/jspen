@@ -37,7 +37,7 @@ const onCodeChanged = (state, code) => ({ ...state, code, dirty: true })
 
 const onSave = state => [
     { ...state, dirty: false },
-    output.Run({ instance: state.output, code: state.code }),
+    output.Run({ instance: state.output, name: state.name }),
 ]
 
 const save = (state, code) => [
@@ -75,7 +75,7 @@ const onLoad = (state, props) => [
         list: props.list,
     },
     editor.Load({ instance: state.editor, code: props.code }),
-    output.Run({ instance: state.output, code: props.code }),
+    output.Run({ instance: state.output, name: props.name }),
 ]
 
 document.body.innerHTML = ''
