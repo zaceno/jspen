@@ -1,7 +1,4 @@
 import { Effect } from './util'
-import { app } from 'hyperapp'
-import html from './html'
-import { style, reset as resetStyles } from './styling'
 import { getCode } from './store'
 
 const run = (name, context, cache, chain) => {
@@ -29,13 +26,25 @@ const run = (name, context, cache, chain) => {
     return cache[name].value
 }
 
+const onQuit = {
+    listeners: [],
+    on(f) {
+        onQuit.listeners.push(f)
+    },
+    emit() {
+        onQuit.listeners.forEach(f => f())
+        onQuit.listeners = []
+    },
+}
+
+window.addEventListener('unload', _ => onQuit.emit())
+
 export const Run = Effect(props => {
     props.instance.innerHTML = ''
-    resetStyles()
+    onQuit.emit()
     run(props.name, {
-        hyperapp: { app, html },
-        style: style(props.instance.id),
         output: props.instance,
+        onquit: f => onQuit.on(f),
     })
 })
 

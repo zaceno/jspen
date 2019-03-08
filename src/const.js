@@ -9,3 +9,11 @@ export const EDITOR_OPTIONS = {
     keyMap: 'sublime',
 }
 export const STORAGE_KEY = 'jspen'
+export const FIREBASE_CONFIG = {
+    apiKey: 'AIzaSyDu6WmqKggBQwMW1-aiZAw6x3e_hvmYJJU',
+    authDomain: 'jspen-19e27.firebaseapp.com',
+    databaseURL: 'https://jspen-19e27.firebaseio.com',
+    projectId: 'jspen-19e27',
+    storageBucket: '',
+    messagingSenderId: '532334699690',
+}
