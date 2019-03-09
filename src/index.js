@@ -1,10 +1,9 @@
 import css from './index.css'
 import { app } from 'hyperapp'
-import { batchFx } from './util'
+import html from './html.js'
 import * as output from './output'
 import * as editor from './editor'
 import * as store from './store'
-import html from './html.js'
 const { div, select, option, input, span } = html
 
 const onInitOutput = (state, instance) =>

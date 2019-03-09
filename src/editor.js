@@ -9,7 +9,7 @@ export const Init = Effect((props, dispatch) => {
         const instance = CodeMirror(containerElem, EDITOR_OPTIONS)
         containerElem.querySelector('.CodeMirror').style.height = 'auto'
         dispatch(props.action, instance)
-    }, 100)
+    }, 0)
 })
 
 export const Load = Effect(props =>

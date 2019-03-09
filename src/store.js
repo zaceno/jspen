@@ -1,54 +1,79 @@
 import { Effect } from './util'
-const PREFIX = 'jspen_'
-const LIST = 'jspenlist'
-const list = JSON.parse(localStorage.getItem(LIST) || '{"": true}')
-const saveList = _ => localStorage.setItem(LIST, JSON.stringify(list))
-const listArr = _ => Object.keys(list).sort()
-const listHas = name => !!list[name]
-export const getCode = name => localStorage.getItem(PREFIX + name) || ''
-const saveCode = (name, code) => {
-    localStorage.setItem(PREFIX + name, code)
-    list[name] = true
-    saveList()
-}
-const remove = name => {
-    localStorage.removeItem(PREFIX + name)
-    delete list[name]
-    saveList()
-}
+import * as db from './db'
 
-export const Save = Effect((props, dispatch) => {
-    saveCode(props.name, props.code)
-    props.action && dispatch(props.action)
+let codes = { '': '' }
+let docs = {}
+
+let synced = db.all().then(modules => {
+    return modules.map(([id, { name, code }]) => {
+        codes[name] = code
+        docs[name] = id
+    })
 })
+
+export const getCode = name => codes[name] || ''
 
 export const Rename = Effect((props, dispatch) => {
-    const code = getCode(props.oldName)
-    if (listHas(props.newName) && props.newName !== '') {
-        props.action &&
+    synced
+        .then(_ => {
+            //do the local updates immediately.
+            //db updates afterward.
+
+            const exists = !!codes[props.newName]
+            if (exists && props.newName !== '') return false
+
+            let code = codes[props.oldName]
+            let promises = []
+            if (props.oldName !== '') {
+                let id = docs[props.oldName]
+                delete codes[props.oldName]
+                delete docs[props.oldName]
+                promises.push(db.remove(id))
+            }
+            codes[props.newName] = code
+            if (exists) {
+                promises.push(
+                    db.update(docs[props.newName], {
+                        name: props.newName,
+                        code,
+                    })
+                )
+            } else {
+                promises.push(
+                    db.create({ name: props.newName, code }).then(id => {
+                        docs[props.newName] = id
+                    })
+                )
+            }
+            return Promise.all(promises)
+        })
+        .then(ok => {
             dispatch(props.action, {
-                name: props.oldName,
-                list: listArr(),
-                code,
+                name: ok ? props.newName : props.oldName,
+                code: codes[props.newName],
+                list: Object.keys(codes).sort(),
             })
-        return
-    }
-    if (props.oldName !== '') remove(props.oldName)
-    saveCode(props.newName, code)
-    props.action &&
-        dispatch(props.action, {
-            name: props.newName,
-            list: listArr(),
-            code,
         })
 })
 
-export const Load = Effect(
-    (props, dispatch) =>
-        props.action &&
+export const Load = Effect((props, dispatch) => {
+    synced.then(_ =>
         dispatch(props.action, {
-            code: getCode(props.name),
+            code: codes[props.name] || '',
+            list: Object.keys(codes).sort(),
             name: props.name,
-            list: listArr(),
         })
-)
+    )
+})
+
+export const Save = Effect((props, dispatch) => {
+    synced.then(_ => {
+        codes[props.name] = props.code
+        return db
+            .update(docs[props.name], {
+                name: props.name,
+                code: props.code,
+            })
+            .then(_ => dispatch(props.action))
+    })
+})
