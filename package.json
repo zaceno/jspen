@@ -2,11 +2,9 @@
   "name": "jspen",
   "version": "2.0.0",
   "description": "web app for playing with javascript",
-  "main": "index.js",
-  "dependencies": {
-    "firebase": "^5.8.6"
-  },
+  "main": "index.html",
   "devDependencies": {
+    "firebase": "^5.8.6",
     "autoprefixer": "^9.4.9",
     "codemirror": "^5.44.0",
     "hyperapp": "^2.0.0-alpha.8",
