@@ -1,6 +1,34 @@
 import CodeMirror from 'codemirror'
 import 'codemirror/lib/codemirror.css'
-import { EDITOR_OPTIONS } from './const'
+import 'codemirror/theme/base16-light.css'
+import 'codemirror/mode/javascript/javascript'
+import 'codemirror/keymap/sublime'
+import 'codemirror/addon/search/search'
+import 'codemirror/addon/search/searchcursor'
+import 'codemirror/addon/search/jump-to-line'
+import 'codemirror/addon/dialog/dialog.js'
+import 'codemirror/addon/dialog/dialog.css'
+import 'codemirror/addon/edit/closebrackets'
+import 'codemirror/addon/edit/matchbrackets'
+import 'codemirror/addon/lint/lint'
+import 'codemirror/addon/lint/lint.css'
+import 'codemirror/addon/lint/javascript-lint'
+import { JSHINT } from 'jshint'
+window.JSHINT = JSHINT
+
+const EDITOR_OPTIONS = {
+    mode: 'javascript',
+    theme: 'base16-light',
+    indentUnit: 4,
+    lineNumbers: true,
+    keyMap: 'sublime',
+    autoCloseBrackets: true,
+    gutters: ['CodeMirror-lint-markers'],
+    lint: {
+        esversion: 9,
+        asi: true,
+    },
+}
 import { Effect } from './util'
 
 export const Init = Effect((props, dispatch) => {

@@ -1,7 +1,7 @@
 import { Effect } from './util'
 import { getCode } from './store'
 
-const run = (name, context, cache, chain) => {
+const run = (name, code, context, cache, chain) => {
     chain = { ...(chain || {}) }
     cache = cache || {}
     if (chain[name]) throw new Error('Cyclical dependency on' + name)
@@ -9,10 +9,10 @@ const run = (name, context, cache, chain) => {
     if (!cache[name]) {
         cache[name] = {}
         try {
-            const fn = new Function(getCode(name))
+            const fn = new Function(code)
             const context2 = {
                 ...context,
-                load: name => run(name, context, cache, chain),
+                load: name => run(name, getCode(name), context, cache, chain),
             }
             if (!context.main) {
                 context2.main = context2
@@ -42,7 +42,7 @@ window.addEventListener('unload', _ => onQuit.emit())
 export const Run = Effect(props => {
     props.instance.innerHTML = ''
     onQuit.emit()
-    run(props.name, {
+    run(props.name, props.code, {
         output: props.instance,
         onquit: f => onQuit.on(f),
     })

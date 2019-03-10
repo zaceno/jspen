@@ -1,79 +1,98 @@
 import { Effect } from './util'
-import * as db from './db'
+import firebase from 'firebase/app'
+import 'firebase/firestore'
 
-let codes = { '': '' }
-let docs = {}
+const FIREBASE_CONFIG = {
+    apiKey: 'AIzaSyDu6WmqKggBQwMW1-aiZAw6x3e_hvmYJJU',
+    authDomain: 'jspen-19e27.firebaseapp.com',
+    projectId: 'jspen-19e27',
+}
+const FIREBASE_COLLECTION = 'modules'
 
-let synced = db.all().then(modules => {
-    return modules.map(([id, { name, code }]) => {
-        codes[name] = code
-        docs[name] = id
+firebase.initializeApp(FIREBASE_CONFIG)
+const db = firebase.firestore()
+
+try {
+    db.enablePersistence()
+} catch (err) {
+    if (!/already exists/.test(err.message)) {
+        console.error('Firebase initialization error', err.stack)
+    }
+}
+
+let ids = {}
+let codes = {}
+export const List = Effect((action, dispatch) => {
+    db.collection(FIREBASE_COLLECTION).onSnapshot(snapshot => {
+        ids = {}
+        snapshot.forEach(doc => {
+            let { code, name } = doc.data()
+            ids[name] = doc.id
+            codes[name] = code
+        })
+        dispatch(action, Object.keys(ids).sort())
     })
+    return db.collection(FIREBASE_COLLECTION).onSnapshot(() => {})
 })
 
-export const getCode = name => codes[name] || ''
+export const Load = Effect(({ name, action }, dispatch) => {
+    if (!codes[name]) return
+    dispatch(action, { name, code: codes[name] })
+})
 
-export const Rename = Effect((props, dispatch) => {
-    synced
-        .then(_ => {
-            //do the local updates immediately.
-            //db updates afterward.
+export const Save = Effect(({ name, code }) => {
+    codes[name] = code
+    db.collection(FIREBASE_COLLECTION)
+        .doc(ids[name])
+        .set({ name, code })
+})
 
-            const exists = !!codes[props.newName]
-            if (exists && props.newName !== '') return false
-
-            let code = codes[props.oldName]
-            let promises = []
-            if (props.oldName !== '') {
-                let id = docs[props.oldName]
-                delete codes[props.oldName]
-                delete docs[props.oldName]
-                promises.push(db.remove(id))
-            }
-            codes[props.newName] = code
-            if (exists) {
-                promises.push(
-                    db.update(docs[props.newName], {
-                        name: props.newName,
-                        code,
-                    })
-                )
-            } else {
-                promises.push(
-                    db.create({ name: props.newName, code }).then(id => {
-                        docs[props.newName] = id
-                    })
-                )
-            }
-            return Promise.all(promises)
-        })
-        .then(ok => {
-            dispatch(props.action, {
-                name: ok ? props.newName : props.oldName,
-                code: codes[props.newName],
-                list: Object.keys(codes).sort(),
+export const Rename = Effect(({ oldName, newName, action }, dispatch) => {
+    const code = codes[oldName]
+    const id = ids[oldName]
+    if (oldName === newName) return
+    if (newName === '') {
+        codes[''] = code
+        delete ids[oldName]
+        delete codes[oldName]
+        dispatch(action, newName)
+        db.collection(FIREBASE_COLLECTION)
+            .doc(id)
+            .delete()
+            .then(_ => {
+                return db
+                    .collection(FIREBASE_COLLECTION)
+                    .doc(ids[''])
+                    .set({ name: '', code })
             })
-        })
-})
-
-export const Load = Effect((props, dispatch) => {
-    synced.then(_ =>
-        dispatch(props.action, {
-            code: codes[props.name] || '',
-            list: Object.keys(codes).sort(),
-            name: props.name,
-        })
-    )
-})
-
-export const Save = Effect((props, dispatch) => {
-    synced.then(_ => {
-        codes[props.name] = props.code
-        return db
-            .update(docs[props.name], {
-                name: props.name,
-                code: props.code,
+    } else if (!!codes[newName]) {
+        dispatch(action, oldName)
+    } else if (oldName === '') {
+        codes[newName] = code
+        dispatch(action, newName)
+        db.collection(FIREBASE_COLLECTION)
+            .add({
+                name: newName,
+                code,
             })
-            .then(_ => dispatch(props.action))
-    })
+            .then(doc => {
+                ids[newName] = doc.id
+            })
+    } else {
+        codes[newName] = code
+        ids[newName] = id
+        delete codes[oldName]
+        delete ids[oldName]
+        dispatch(action, newName)
+        db.collection(FIREBASE_COLLECTION)
+            .doc(id)
+            .set({
+                name: newName,
+                code,
+            })
+    }
 })
+
+export const getCode = name => {
+    return codes[name] || ''
+}

@@ -8,7 +8,8 @@
     "autoprefixer": "^9.4.9",
     "codemirror": "^5.44.0",
     "hyperapp": "^2.0.0-alpha.8",
-    "postcss-modules": "^1.4.1"
+    "postcss-modules": "^1.4.1",
+    "jshint": "^2.10.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
