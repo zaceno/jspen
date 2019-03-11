@@ -13,7 +13,7 @@
     "postcss-modules": "^1.4.1"
   },
   "scripts": {
-    "build": "rm -rf ./docs && parcel build src/index.html --out-dir docs/ --public-url /jspen/ --no-source-maps",
+    "build": "rm -rf ./docs && parcel build src/index.html --out-dir docs/ --public-url ./ --no-source-maps",
     "dev": "parcel src/index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
