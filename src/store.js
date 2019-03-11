@@ -36,8 +36,7 @@ export const List = Effect((action, dispatch) => {
 })
 
 export const Load = Effect(({ name, action }, dispatch) => {
-    if (!codes[name]) return
-    dispatch(action, { name, code: codes[name] })
+    dispatch(action, { name, code: codes[name] || '' })
 })
 
 export const Save = Effect(({ name, code }) => {

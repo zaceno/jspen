@@ -2,7 +2,7 @@ import css from './index.css'
 import { app } from 'hyperapp'
 import { Action } from './util'
 import html from './html.js'
-const { div, select, option, input, span } = html
+const { div, select, option, input, span, button } = html
 
 import * as output from './output'
 import * as editor from './editor'
@@ -33,10 +33,12 @@ const load = Action((state, event) => [
     store.Load({ name: event.target.value, action: onLoadCode }),
 ])
 
-const onUpdateList = Action((state, list) => [
-    { ...state, list },
-    state.name === null && store.Load({ name: '', action: onLoadCode }),
-])
+const onUpdateList = Action((state, list) => {
+    return [
+        { ...state, list },
+        state.name === null && store.Load({ name: '', action: onLoadCode }),
+    ]
+})
 
 const onLoadCode = Action((state, { code, name }) => {
     return [
@@ -55,6 +57,13 @@ const rename = Action((state, event) => [
     }),
 ])
 const onRename = Action((state, name) => ({ ...state, name }))
+const toggleTheme = Action((state, name) => {
+    const theme = state.theme === 'dark' ? 'light' : 'dark'
+    return [
+        { ...state, theme },
+        editor.SetTheme({ instance: state.editor, theme }),
+    ]
+})
 
 document.body.innerHTML = ''
 app({
@@ -66,6 +75,7 @@ app({
             name: null,
             list: [],
             dirty: false,
+            theme: 'light',
         },
 
         editor.Init({
@@ -104,10 +114,21 @@ app({
                     onchange: rename,
                     value: state.name,
                 }),
+                button(
+                    {
+                        id: css.themeToggle,
+                        class: {
+                            [css.dark]: state.theme === 'dark',
+                            [css.light]: state.theme === 'light',
+                        },
+                        onclick: toggleTheme,
+                    },
+                    '\u25D0'
+                ),
                 span(state.dirty ? '\u270D' : '\u2713'),
             ]),
             div({ id: css.editor }),
-            div({ id: css.output }),
+            div({ id: css.output, tabindex: '0' }),
         ]),
     container: document.body,
 })

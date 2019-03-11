@@ -74,3 +74,27 @@ body {
     top: 6px;
     right: 5px;
 }
+
+#themeToggle {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    top: 6px;
+    left: 410px;
+    border: 1px #555 solid;
+    border-radius: 3px;
+    padding: 3px;
+    margin: 0;
+    height: 18px;
+    line-height: 12px;
+    font-size: 12px;
+}
+
+.dark {
+    background-color: #888;
+    color: #fff;
+}
+.light {
+    background-color: #eee;
+    color: #000;
+}

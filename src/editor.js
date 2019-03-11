@@ -1,6 +1,7 @@
 import CodeMirror from 'codemirror'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/base16-light.css'
+import 'codemirror/theme/base16-dark.css'
 import 'codemirror/mode/javascript/javascript'
 import 'codemirror/keymap/sublime'
 import 'codemirror/addon/search/search'
@@ -62,4 +63,8 @@ export const onChange = Effect((props, dispatch) => {
     }
     props.instance.on('changes', handler)
     return () => props.instance.off('changes', handler)
+})
+
+export const SetTheme = Effect(props => {
+    props.instance.setOption('theme', 'base16-' + props.theme)
 })
