@@ -4,14 +4,17 @@
   "description": "web app for playing with javascript",
   "main": "index.html",
   "devDependencies": {
-    "firebase": "^5.8.6",
     "autoprefixer": "^9.4.9",
     "codemirror": "^5.44.0",
+    "cssnano": "^4.1.10",
+    "firebase": "^5.8.6",
     "hyperapp": "^2.0.0-alpha.8",
-    "postcss-modules": "^1.4.1",
-    "jshint": "^2.10.1"
+    "jshint": "^2.10.1",
+    "postcss-modules": "^1.4.1"
   },
   "scripts": {
+    "build": "parcel build src/index.html --out-dir docs/ --experimental-scope-hoisting",
+    "dev": "parcel src/index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Zacharias Enochsson",
