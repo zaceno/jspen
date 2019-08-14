@@ -1,22 +1,24 @@
 {
-  "name": "jspen",
-  "version": "2.0.0",
-  "description": "web app for playing with javascript",
-  "main": "index.html",
-  "devDependencies": {
-    "autoprefixer": "^9.4.9",
-    "codemirror": "^5.44.0",
-    "cssnano": "^4.1.10",
-    "firebase": "^5.8.6",
-    "hyperapp": "^2.0.0-alpha.8",
-    "jshint": "^2.10.1",
-    "postcss-modules": "^1.4.1"
-  },
-  "scripts": {
-    "build": "rm -rf ./docs && parcel build src/index.html --out-dir docs/ --public-url ./ --no-source-maps",
-    "dev": "parcel src/index.html",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Zacharias Enochsson",
-  "license": "MIT"
+    "name": "jspen",
+    "version": "2.0.0",
+    "description": "web app for playing with javascript",
+    "main": "index.html",
+    "devDependencies": {
+        "autoprefixer": "^9.4.9",
+        "cssnano": "^4.1.10",
+        "postcss-modules": "^1.4.1"
+    },
+    "dependencies": {
+        "codemirror": "^5.44.0",
+        "firebase": "^5.8.6",
+        "hyperapp": "^2.0.0-alpha.8",
+        "jshint": "^2.10.1"
+    },
+    "scripts": {
+        "build": "rm -rf ./docs && parcel build src/index.html --out-dir docs/ --public-url ./ --no-source-maps",
+        "dev": "parcel src/index.html",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Zacharias Enochsson",
+    "license": "MIT"
 }
