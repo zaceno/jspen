@@ -9,7 +9,7 @@
         "postcss-modules": "^1.4.1"
     },
     "dependencies": {
-        "codemirror": "^5.44.0",
+        "codemirror": "^5.58.2",
         "firebase": "^5.8.6",
         "hyperapp": "^2.0.0-alpha.8",
         "jshint": "^2.10.1"
